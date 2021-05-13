@@ -1,85 +1,72 @@
 <?php
 
-	/* load init file */
+	// On prolonge la session
+	session_start();
+	// On teste si la variable de session existe et contient une valeur
+	if(empty($_SESSION['username']))
+	{
+	// Si inexistante ou nulle, on redirige vers le formulaire de login
+	header('Location: ./login.php');
+	exit;
+	}
+
+	// Appel le script d'initialisation
 	require_once __DIR__ . '/init.php';
 
-	/* Define this page info */
-	$current_page = 'membres';
-	$page_title = 'Liste des membres';
-
-	/* Get the list of members */
-	$sql="SELECT * FROM hdc_members";
-	if (($membersList = $mysqli->query($sql))===false ) {
-		printf("members_list.php - Requête invalide: %s\nWhole query: %s\n", $mysqli->error, $sql);
-		exit();
-	}
-
-	/* Get the total number of members */
-	$sql="SELECT COUNT(1) AS 'theNumber' FROM hdc_members";
-	if (($result1 = $mysqli->query($sql))===false ) {
-		printf("members_list.php - Requête invalide: %s\nWhole query: %s\n", $mysqli->error, $sql);
-		exit();
-	}
-	else {
-		$row = $result1->fetch_array();
-		$nbMembres = $row["theNumber"];
-	}
-
-	/* Get the number of unpaid contributions */
-	$sql="SELECT COUNT(1) AS 'theNumber' FROM hdc_members WHERE member_contribution_payed=0";
-	if (($result2 = $mysqli->query($sql))===false ) {
-		printf("members_list.php - Requête invalide: %s\nWhole query: %s\n", $mysqli->error, $sql);
-		exit();
-	}
-	else {
-		$row = $result2->fetch_array();
-		$unpaidContribution = $row["theNumber"];
-	}
-
-	/* Get the number of member by group */
-	/* and create strings to be used as data array in js */
+	$thisPage=array('membres','HDC - Liste des membres');
 	$chartDataset="";
 	$chartLabels="";
-	$sql="SELECT * FROM (SELECT member_group, COUNT(member_id) AS 'theNumber' FROM hdc_members GROUP BY member_group) S ORDER BY theNumber desc";
-	if (($membersXgroups = $mysqli->query($sql))===false ) {
-	  printf("members_list.php - Requête invalide: %s\nWhole query: %s\n", $mysqli->error, $sql);
-	  exit();
-	}
-	else {
-	  while ($row = $membersXgroups->fetch_array()) {
-	    if ($chartDataset=="") {
-	      $chartDataset=$row["theNumber"];
-	    }
-	    else {
-	      $chartDataset=$chartDataset . ', ' . $row["theNumber"];
-	    }
-	    if ($chartLabels=="") {
-	      $chartLabels="'" . $row["member_group"];
-	    }
-	    else {
-	      $chartLabels=$chartLabels . "', '" . $row["member_group"];
-	    }
-	  }
-	  $chartLabels=$chartLabels . "'";
-	}
-	/* Get configured colors for charts */
 	$chartColorCodes="";
-	$sql="SELECT * FROM hdc_chart_colors";
-	if (($membersXgroups = $mysqli->query($sql))===false ) {
-	  printf("members_list.php - Requête invalide: %s\nWhole query: %s\n", $mysqli->error, $sql);
-	  exit();
+
+	//Définition des requêtes qui seront utilisées
+	$requeteListeMembre   = "SELECT * FROM hdc_members";
+	$requeteNbreMembres   = "SELECT COUNT(1) FROM hdc_members";
+	$requeteNbreInpayes   = "SELECT COUNT(1) FROM hdc_members WHERE member_contribution_payed=0";
+	$requeteMembersXGroup = "SELECT * FROM (SELECT member_group, COUNT(member_id) AS 'theNumber' FROM hdc_members GROUP BY member_group) S ORDER BY theNumber desc";
+	$requeteCouleursGraph = "SELECT * FROM hdc_chart_colors";
+
+	// Execution des requêtes
+	$exec_requete       = mysqli_query($db,$requeteNbreMembres);
+	$reponseNbreMembres = mysqli_fetch_array($exec_requete);
+
+	$exec_requete       = mysqli_query($db,$requeteNbreInpayes);
+	$reponseNbreInpayes = mysqli_fetch_array($exec_requete);
+
+	// Collecte des données pourle graphique
+	$exec_requete       = mysqli_query($db,$requeteMembersXGroup);
+	while($reponseMembersXGroup = mysqli_fetch_array($exec_requete))
+	{
+		if ($chartDataset=="")
+		{
+			$chartDataset=$reponseMembersXGroup["theNumber"];
+		}
+		else
+		{
+			$chartDataset=$chartDataset . ', ' . $reponseMembersXGroup["theNumber"];
+		}
+		if ($chartLabels=="")
+		{
+			$chartLabels="'" . $reponseMembersXGroup["member_group"];
+		}
+		else
+		{
+			$chartLabels=$chartLabels . "', '" . $reponseMembersXGroup["member_group"];
+		}
 	}
-	else {
-	  while ($row = $membersXgroups->fetch_array()) {
-			if ($chartColorCodes=="") {
-	      $chartColorCodes="'" . $row["color_code_html"];
-	    }
-	    else {
-	      $chartColorCodes=$chartColorCodes . "', '" . $row["color_code_html"];
-	    }
-	  }
-	  $chartColorCodes=$chartColorCodes . "'";
+	$chartLabels=$chartLabels . "'";
+
+	$exec_requete = mysqli_query($db,$requeteCouleursGraph);
+	while($reponseCouleursGraph = mysqli_fetch_array($exec_requete))
+	{
+		if ($chartColorCodes=="") {
+			$chartColorCodes="'" . $reponseCouleursGraph["color_code_html"];
+		}
+		else {
+			$chartColorCodes=$chartColorCodes . "', '" . $reponseCouleursGraph["color_code_html"];
+		}
 	}
+	$chartColorCodes=$chartColorCodes . "'";
+
 ?>
 
 <!doctype html>
@@ -97,7 +84,7 @@
 					<div class="page-inner">
 						<!-- page-header -->
 						<div class="page-header">
-							<h4 class="page-title"><?php echo $page_title ?></h4>
+							<h4 class="page-title">Liste des membres</h4>
 							<ul class="breadcrumbs">
 								<li class="nav-home">
 									<a href="index.php">
@@ -114,7 +101,7 @@
 									<i class="fas fa-angle-right"></i>
 								</li>
 								<li class="nav-item">
-									<a href="#"><?php echo $page_title ?></a>
+									<a href="#">Liste des membres</a>
 								</li>
 							</ul>
 						</div>
@@ -132,7 +119,7 @@
 											<div class="col col-stats ml-3 ml-sm-0">
 												<div class="numbers">
 													<p class="card-category">Membres</p>
-													<h4 class="card-title"><?php echo $nbMembres ?></h4>
+													<h4 class="card-title"><?php echo $reponseNbreMembres[0] ?></h4>
 												</div>
 											</div>
 										</div>
@@ -150,7 +137,7 @@
 											<div class="col col-stats ml-3 ml-sm-0">
 												<div class="numbers">
 													<p class="card-category">Cotisation non payées</p>
-													<h4 class="card-title"><?php echo $unpaidContribution ?></h4>
+													<h4 class="card-title"><?php echo $reponseNbreInpayes[0] ?></h4>
 												</div>
 											</div>
 										</div>
@@ -171,7 +158,7 @@
 											<div class="col col-stats ml-3 ml-sm-0">
 												<div class="numbers">
 													<p class="card-category">Cotisation non payées</p>
-													<h4 class="card-title"><?php echo $unpaidContribution ?></h4>
+													<h4 class="card-title"><?php echo $reponseNbreInpayes[0] ?></h4>
 												</div>
 											</div>
 										</div>
@@ -211,19 +198,22 @@
 													</tr>
 												</thead>
 												<tbody>
-													<?php while ($row = $membersList->fetch_array()) { ?>
+													<?php
+														$exec_requete = mysqli_query($db,$requeteListeMembre);
+														while($reponseListeMembre = mysqli_fetch_array($exec_requete)) {
+													?>
 													<tr>
-														<td class="dtr-control sorting_1" tabindex="0" ><?php echo $row["member_id"]; ?></td>
-														<td><?php echo $row["member_name"];?></td>
-														<td><?php echo $row["member_firstname"];?></td>
-														<td><?php echo $row["member_birthdate"];?></td>
-														<td><?php echo $row["member_group"];?></td>
-														<td><?php echo $row["member_scuba_certification"];?></td>
-														<td><?php echo $row["member_freedive_certification"];?></td>
-														<td><?php echo $row["member_swim_certification"];?></td>
+														<td class="dtr-control sorting_1" tabindex="0" ><?php echo $reponseListeMembre["member_id"]; ?></td>
+														<td><?php echo $reponseListeMembre["member_name"];?></td>
+														<td><?php echo $reponseListeMembre["member_firstname"];?></td>
+														<td><?php echo $reponseListeMembre["member_birthdate"];?></td>
+														<td><?php echo $reponseListeMembre["member_group"];?></td>
+														<td><?php echo $reponseListeMembre["member_scuba_certification"];?></td>
+														<td><?php echo $reponseListeMembre["member_freedive_certification"];?></td>
+														<td><?php echo $reponseListeMembre["member_swim_certification"];?></td>
 														<td>
 															<?php
-															if ($row["member_medical_certification_ok"] == "0") { ?>
+															if ($reponseListeMembre["member_medical_certification_ok"] == "0") { ?>
 																<div class="form-check">
 																	<label class="form-check-label">
 																		<input class="form-check-input" type="checkbox" value="">
@@ -243,7 +233,7 @@
 														</td>
 														<td>
 															<?php
-															if ($row["member_contribution_payed"] == "0") { ?>
+															if ($reponseListeMembre["member_contribution_payed"] == "0") { ?>
 																<div class="form-check">
 																	<label class="form-check-label">
 																		<input class="form-check-input" type="checkbox" value="">
@@ -261,7 +251,7 @@
 															<?php }
 															?>
 														</td>
-														<td><?php echo $row["member_website_role"]; }?></td>
+														<td><?php echo $reponseListeMembre["member_website_role"]; }?></td>
 													</tr>
 												</tbody>
 											</table>

@@ -1,37 +1,39 @@
 <?php
 
-	/* Charge le fichier de configuration */
+	// On prolonge la session
+	session_start();
+	// On teste si la variable de session existe et contient une valeur
+	if(empty($_SESSION['username']))
+	{
+	  // Si inexistante ou nulle, on redirige vers le formulaire de login
+	  header('Location: ./login.php');
+	  exit;
+	}
+
+	// Appel le script d'initialisation
 	require_once __DIR__ . '/init.php';
 
-	/* Définit quelle est la page courante */
-	$current_page = 'home';
-	$page_title = 'Accueil';
+	// Définit quelle est la page courante
+	$thisPage=array('index','HDC - Accueil');
 
-	/* Requête nombre de membres */
-	$sql="SELECT COUNT(1) AS nombre FROM hdc_members";
-	if (($result1 = $mysqli->query($sql))===false ) {
-	  printf("index.php - Requête invalide: %s\nWhole query: %s\n", $mysqli->error, $sql);
-	  exit();
-	}
-	else {
-	  $row = $result1->fetch_array();
-	  $nbMembres = $row["nombre"];
-	}
+	//Définition des requêtes qui seront utilisées
+	$requeteNomClub            = "SELECT option_value FROM hdc_options WHERE option_key = 'nom_club'";
+	$requeteNbreMembres        = "SELECT COUNT(1) AS nombre FROM hdc_members";
+	$requeteCommandesEnAttente = "SELECT COUNT(1) AS nombre FROM wp_wc_order_stats WHERE status='wc-on-hold'";
 
-	/* Requête nombre de commandes en attente */
-	$sql="SELECT COUNT(1) AS nombre FROM wp_wc_order_stats WHERE status='wc-on-hold'";
-	if (($result2 = $mysqli->query($sql))===false ) {
-	  printf("index.php - Requête invalide: %s\nWhole query: %s\n", $mysqli->error, $sql);
-	  exit();
-	}
-	else {
-	  $row = $result2->fetch_array();
-	  $nbCdesAttente = $row["nombre"];
-	}
+	// Execution des requêtes
+	$exec_requete   = mysqli_query($db,$requeteNomClub);
+	$reponseNomClub = mysqli_fetch_array($exec_requete);
+
+	$exec_requete   = mysqli_query($db,$requeteNbreMembres);
+	$reponseNbreMembres = mysqli_fetch_array($exec_requete);
+
+	$exec_requete   = mysqli_query($db,$requeteCommandesEnAttente);
+	$reponseCommandesEnAttente = mysqli_fetch_array($exec_requete);
 
 ?>
 <!doctype html>
-<html>
+<html lang="fr-FR">
 	<?php require_once __DIR__ . '/head.php'; ?>
 	<body>
 		<div class="wrapper">
@@ -45,7 +47,7 @@
 					<div class="page-inner">
 						<!-- page-header -->
 						<div class="page-header">
-							<h4 class="page-title"><?php echo 'Bienvenue au ' . NOM_CLUB ?></h4>
+							<h4 class="page-title"><?php echo 'Bienvenue au ' . $reponseNomClub[0] ?></h4>
 							<ul class="breadcrumbs">
 								<li class="nav-home">
 									<a href="#">
@@ -69,7 +71,7 @@
 											<div class="col col-stats ml-3 ml-sm-0">
 												<div class="numbers">
 													<p class="card-category">Membres</p>
-													<h4 class="card-title"><?php echo $nbMembres ?></h4>
+													<h4 class="card-title"><?php echo $reponseNbreMembres[0] ?></h4>
 												</div>
 											</div>
 										</div>
@@ -88,7 +90,7 @@
 											<div class="col col-stats ml-3 ml-sm-0">
 												<div class="numbers">
 													<p class="card-category">Commandes en attente</p>
-													<h4 class="card-title"><?php echo $nbCdesAttente ?></h4>
+													<h4 class="card-title"><?php echo $reponseCommandesEnAttente[0] ?></h4>
 												</div>
 											</div>
 										</div>

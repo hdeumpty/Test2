@@ -12,8 +12,8 @@
 						<div class="info">
 							<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
 								<span>
-									Cyrille
-									<span class="user-level">Administrateur</span>
+									<?php echo $_SESSION['username'];?>
+									<span class="user-level"><?php echo $_SESSION['user_role'];?></span>
 									<span class="caret"></span>
 								</span>
 							</a>
@@ -45,7 +45,7 @@
 					<!-- Menu -->
 					<ul class="nav nav-primary">
 						<?php
-						if ($current_page == "home") { ?>
+						if ($thisPage[0] == "index") { ?>
 							<li class="nav-item active">
 						<?php
 						}
@@ -60,7 +60,7 @@
 							</a>
 						</li>
 						<?php
-						if ($current_page == "membres") { ?>
+						if ($thisPage[0] == "membres") { ?>
 							<li class="nav-item active submenu">
 								<a data-toggle="collapse" href="#base">
 									<i class="fas fa-users"></i>

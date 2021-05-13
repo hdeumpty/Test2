@@ -41,3 +41,18 @@ h4 {font-size: 18px;}
     font-style: italic;
     color:#333;
 }
+.login {
+  padding: 20px 0;
+  width: 320px;
+  margin: auto;
+}
+.login form {
+    margin-top: 20px;
+    margin-left: 0;
+    padding: 26px 24px 34px;
+    font-weight: 400;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
