@@ -1,3 +1,12 @@
+<?php
+  session_start();
+  $thisPage=array('login','HDC - Login');
+  if(isset($_GET['deconnexion']))
+  {
+    $deconnexion=$_GET['deconnexion'];
+    if($deconnexion==true){session_unset();;}
+  }
+ ?>
 <html>
   <?php require_once __DIR__ . '/head.php'; ?>
   <body>
@@ -14,10 +23,8 @@
             if(isset($_GET['erreur']))
             {
               $err = $_GET['erreur'];
-              if($err==1){echo "<p style='color:red'>Utilisateur incorrect</p>";}
-              if($err==2){echo "<p style='color:red'>Mot de passe incorrect</p>";}
-              // if($err==1 || $err==2)
-              // echo "<p style='color:red'>Utilisateur ou mot de passe incorrect</p>";
+              if($err==1 || $err==2){echo "<p style='color:red'>Utilisateur ou mot de passe incorrect</p>";}
+              //if($err==2){echo "<p style='color:red'>Mot de passe incorrect</p>";}
             }
           ?>
       </form>

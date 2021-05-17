@@ -23,17 +23,15 @@
 								<ul class="nav">
 									<li>
 										<a href="#profile">
-											<span class="link-collapse">My Profile</span>
-										</a>
-									</li>
-									<li>
-										<a href="#edit">
-											<span class="link-collapse">Edit Profile</span>
+											<span class="link-collapse">Mon profil</span>
 										</a>
 									</li>
 									<li>
 										<a href="#settings">
-											<span class="link-collapse">Settings</span>
+											<span class="link-collapse">Mes options</span>
+										</a>
+										<a href="login.php?deconnexion=true">
+											<span class="link-collapse">Déconnexion</span>
 										</a>
 									</li>
 								</ul>

@@ -1,6 +1,5 @@
 <?php
 // procédure de vérification du login
-
 session_start();
 if(isset($_POST['username']) && isset($_POST['password']))
 {
