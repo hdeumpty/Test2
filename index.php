@@ -25,10 +25,10 @@
 	$exec_requete   = mysqli_query($db,$requeteNomClub);
 	$reponseNomClub = mysqli_fetch_array($exec_requete);
 
-	$exec_requete   = mysqli_query($db,$requeteNbreMembres);
+	$exec_requete       = mysqli_query($db,$requeteNbreMembres);
 	$reponseNbreMembres = mysqli_fetch_array($exec_requete);
 
-	$exec_requete   = mysqli_query($db,$requeteCommandesEnAttente);
+	$exec_requete              = mysqli_query($db,$requeteCommandesEnAttente);
 	$reponseCommandesEnAttente = mysqli_fetch_array($exec_requete);
 
 ?>

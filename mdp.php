@@ -1,16 +1,12 @@
 <?php
 // procédure de vérification du login
 session_start();
+
+// Appel le script d'initialisation
+require_once __DIR__ . '/init.php';
+
 if(isset($_POST['username']) && isset($_POST['password']))
 {
-	// connexion à la base de données
-	$db_username = 'root';
-	$db_password = '';
-	$db_name     = 'coc-test';
-	$db_host     = 'localhost';
-	$db = mysqli_connect($db_host, $db_username, $db_password,$db_name)
-		or die('could not connect to database');
-
 	// on applique les deux fonctions mysqli_real_escape_string et htmlspecialchars
 	// pour éliminer toute attaque de type injection SQL et XSS
 	$username = mysqli_real_escape_string($db,htmlspecialchars($_POST['username']));
