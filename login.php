@@ -10,10 +10,10 @@
 <html>
   <?php require_once __DIR__ . '/head.php'; ?>
   <body>
-    <div class="container">
+    <div class="container" style="padding-top: 35px;">
       <div class="row justify-content-center">
         <!--div class="col-5"-->
-          <div class="card"  style="width: 400px;">
+          <div class="card" style="width: 400px;">
             <div class="card-header text-center" style="background-color: #1079cf;border-top-left-radius: 5px;border-top-right-radius: 5px;">
               <img src="./images/hd_logo_dive_239x60_gris.svg">
             </div>

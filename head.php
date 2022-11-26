@@ -19,9 +19,9 @@
   </script>
   <!-- Styles -->
   <link rel="stylesheet" href="css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/atlantis.min.css">
-  <link rel="stylesheet" href="css/.demo.css">
-  <link rel="stylesheet" href="css/cca.css">
+  <link rel="stylesheet" href="css/hdc.css">
+  <!--link rel="stylesheet" href="css/demo.css"-->
+  <!--link rel="stylesheet" href="css/cca.css"-->
   <title>
     <?php echo $thisPage[1] ?>
   </title>

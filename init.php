@@ -3,7 +3,7 @@
 // connexion à la base de données
 $db_username = 'root';
 $db_password = '';
-$db_name     = 'coc-test';
+$db_name     = 'coc_dev';
 $db_host     = 'localhost';
 
 /*
